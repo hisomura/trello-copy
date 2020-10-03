@@ -1,26 +1,13 @@
 import React from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {addCard, selectCards} from "../store/cardsSlice";
-import {createInputTextOnKeyDownCallback} from "../lib/inputText";
+import {useSelector} from "react-redux";
+import ListContainer from "../components/ListContainer";
+import {selectLists} from "../store/listsSlice";
 
 export default function Home() {
-  const cards = useSelector(selectCards);
-  const dispatch = useDispatch();
-  const onKeyDown = createInputTextOnKeyDownCallback((input) => dispatch(addCard({listId: 'list-id-1', name: input})))
-
+  const lists = useSelector(selectLists);
   return (
-    <div className="max-w-xl mx-auto pt-8 z-0 flex justify-end">
-      <div className="py-2">
-        +{" "}
-        <input
-          className="ml-1 w-10/12 text-sm"
-          onKeyDown={onKeyDown}
-          type="text"
-        />
-      </div>
-      {cards.map((card) => {
-        return <div id={card.id}>{card.name}</div>;
-      })}
+    <div className="flex">
+      {lists.map(l => <ListContainer key={l.id} list={l}/>)}
     </div>
   );
 }
