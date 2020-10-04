@@ -1,4 +1,3 @@
-import React from "react";
 import {MdClose} from "react-icons/md";
 import {useDispatch, useSelector} from "react-redux";
 import {addCard, selectCards} from "../store/cardsSlice";
@@ -25,7 +24,6 @@ export default function ListContainer(props: Props) {
             <h1>{props.list.name}</h1>
             <button
               className="my-auto focus:outline-none"
-              data-testid="open-delete-todo-list-modal"
             >
               <MdClose/>
             </button>

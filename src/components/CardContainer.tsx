@@ -1,4 +1,3 @@
-import React from "react";
 import {Card} from "../store/cardsSlice";
 
 type Props = {

@@ -1,4 +1,3 @@
-import React from "react";
 import {useSelector} from "react-redux";
 import ListContainer from "../components/ListContainer";
 import {selectLists} from "../store/listsSlice";
