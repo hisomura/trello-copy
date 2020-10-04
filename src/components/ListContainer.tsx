@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {addCard, selectCards} from "../store/cardsSlice";
 import {createInputTextOnKeyDownCallback} from "../lib/inputText";
 import {List} from "../store/listsSlice";
+import CardContainer from "./CardContainer";
 
 
 type Props = {
@@ -30,21 +31,21 @@ export default function ListContainer(props: Props) {
             </button>
           </div>
 
-
-          <div className="max-w-xl mx-auto pt-8 z-0 flex justify-end">
+          <div className="max-w-xl pt-8 z-0">
             <div className="py-2">
               +{" "}
               <input
-                className="ml-1 w-10/12 text-sm"
+                className="focus:outline-none ml-1 w-10/12 text-sm"
                 onKeyDown={onKeyDown}
                 type="text"
               />
             </div>
-            {cards.map((card) => {
-              return <div id={card.id}>{card.name}</div>;
-            })}
+            <ul>
+              {cards.map((card) => {
+                return <CardContainer key={card.id} card={card}/>
+              })}
+            </ul>
           </div>
-
         </div>
       </div>
     </>
