@@ -11,7 +11,17 @@ type Props = {
 
 export default function ListContainer(props: Props) {
   const dispatch = useDispatch();
-  const cards = useSelector((state: { cards: Card[] }) => state.cards.filter((card) => card.listId === props.list.id));
+  const cards = useSelector(
+    (state: { cards: Card[] }) => state.cards.filter((card) => card.listId === props.list.id),
+    (left, right) => {
+      if (left.length !== right.length) return false;
+      for (let i = 0; i < left.length; i += 1) {
+        if (left[i] !== right[i]) return false;
+      }
+
+      return true;
+    }
+  );
   const onKeyDown = createInputTextOnKeyDownCallback((input) =>
     dispatch(addCard({ listId: props.list.id, name: input }))
   );
