@@ -1,9 +1,11 @@
+import React from "react";
 import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { addCard, Card } from "../store/cardsSlice";
 import { createInputTextOnKeyDownCallback } from "../lib/inputText";
 import { List } from "../store/listsSlice";
 import CardContainer from "./CardContainer";
+import DragTargetLine from "./DragTargetLine";
 
 type Props = {
   list: List;

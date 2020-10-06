@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./tmp/tsconfig.json",
   "compilerOptions": {
     "jsx": "react"
   }
