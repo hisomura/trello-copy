@@ -1,13 +1,13 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ListContainer from "./components/ListContainer";
-import { selectLists } from "./store/listsSlice";
+import { selectActiveLists } from "./store/listsSlice";
 import NewList from "./components/NewList";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { moveCards } from "./store/cardsSlice";
 
 export default function Home() {
-  const lists = useSelector(selectLists);
+  const lists = useSelector(selectActiveLists);
   const dispatch = useDispatch();
 
   const dragEndHandler = (result: DropResult) => {

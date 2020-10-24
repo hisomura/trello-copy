@@ -47,7 +47,7 @@ export const { addList, deleteLists, archiveLists, unArchiveLists } = listsSlice
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
-export const selectOpenLists = (lists: List[]) => lists.filter((t) => !t.archived);
 export const selectLists = (state: { lists: List[] }) => state.lists;
+export const selectActiveLists = (state: { lists: List[] }) => state.lists.filter(list => !list.archived);
 
 export default listsSlice.reducer;

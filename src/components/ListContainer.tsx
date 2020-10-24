@@ -1,11 +1,11 @@
 import React from "react";
-import { MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { addCard, Card } from "../store/cardsSlice";
 import { createInputTextOnKeyDownCallback } from "../lib/inputText";
-import { List } from "../store/listsSlice";
+import { archiveLists, List } from "../store/listsSlice";
 import CardContainer from "./CardContainer";
 import { Droppable } from "react-beautiful-dnd";
+import CloseButton from "./CloseButton";
 
 type Props = {
   list: List;
@@ -15,9 +15,9 @@ export default function ListContainer(props: Props) {
   const dispatch = useDispatch();
   const cards = useSelector(
     (state: { cards: Card[] }) => {
-      const filtered = state.cards.filter((card) => card.listId === props.list.id)
-      filtered.sort((a, b) => a.order - b.order)
-      return filtered
+      const filtered = state.cards.filter((card) => card.listId === props.list.id);
+      filtered.sort((a, b) => a.order - b.order);
+      return filtered;
     },
     (left, right) => {
       if (left.length !== right.length) return false;
@@ -39,9 +39,7 @@ export default function ListContainer(props: Props) {
           <div className="w-64 shadow-xl rounded px-4 pb-4">
             <div className="pt-4 flex justify-between">
               <h1>{props.list.name}</h1>
-              <button className="my-auto focus:outline-none">
-                <MdClose />
-              </button>
+              <CloseButton action={archiveLists({ ids: [props.list.id] })} />
             </div>
 
             <div className="max-w-xl pt-8 z-0">
