@@ -1,5 +1,5 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {v4 as uuidV4} from "uuid";
+import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidV4 } from "uuid";
 
 export type List = {
   boardId: string;
@@ -13,12 +13,12 @@ export const listsSlice = createSlice({
   name: "lists",
   initialState: [
     {
-      boardId: 'default-board',
-      id: 'default-list',
-      name: 'default list',
+      boardId: "default-board",
+      id: "default-list",
+      name: "default list",
       archived: false,
-      order: 1
-    }
+      order: 1,
+    },
   ] as List[],
   reducers: {
     addList: (lists, action: { payload: { boardId: string; name: string } }) => {
@@ -34,15 +34,15 @@ export const listsSlice = createSlice({
       return lists.filter((t) => !action.payload.ids.includes(t.id));
     },
     archiveLists: (lists, action: { payload: { ids: string[] } }) => {
-      return lists.map((t) => (action.payload.ids.includes(t.id) ? {...t, archived: true} : t));
+      return lists.map((t) => (action.payload.ids.includes(t.id) ? { ...t, archived: true } : t));
     },
     unArchiveLists: (lists, action: { payload: { ids: string[] } }) => {
-      return lists.map((t) => (action.payload.ids.includes(t.id) ? {...t, archived: false} : t));
+      return lists.map((t) => (action.payload.ids.includes(t.id) ? { ...t, archived: false } : t));
     },
   },
 });
 
-export const {addList, deleteLists, archiveLists, unArchiveLists} = listsSlice.actions;
+export const { addList, deleteLists, archiveLists, unArchiveLists } = listsSlice.actions;
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
