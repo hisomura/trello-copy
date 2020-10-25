@@ -11,3 +11,11 @@ it("adds a card", async () => {
   await userEvent.type(screen.getByRole("textbox"), "Add Test.{enter}");
   expect(await screen.findByText(/Add Test/)).toBeInTheDocument();
 });
+
+it("adds a list", async () => {
+  render(<App />);
+
+  userEvent.click(screen.getByText(/New Todo List/ ));
+  await userEvent.type(document.activeElement!, "NewTodoList{enter}");
+  expect(await screen.findByText(/NewTodoList/)).toBeInTheDocument();
+});

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addCard, Card } from "../store/cardsSlice";
 import { createInputTextOnKeyDownCallback } from "../lib/inputText";
@@ -32,11 +32,15 @@ export default function ListContainer(props: Props) {
     dispatch(addCard({ listId: props.list.id, name: input }))
   );
 
+  const archiveList = useCallback(() => {
+    archiveLists({ ids: [props.list.id] });
+  }, [props.list.id]);
+
   return (
     <div className="w-64 shadow-xl rounded p-4 mr-4">
       <div className="pt-4 flex justify-between">
         <h1>{props.list.name}</h1>
-        <CloseButton action={archiveLists({ ids: [props.list.id] })} />
+        <CloseButton onClick={archiveList} />
       </div>
 
       <div className="py-2">

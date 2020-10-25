@@ -1,20 +1,16 @@
-import { useDispatch } from "react-redux";
 import React from "react";
 import { MdClose } from "react-icons/md";
-import { PayloadAction } from "@reduxjs/toolkit";
 
-type Props<T extends {} = {}> = {
-  action: PayloadAction<T>;
+type Props = {
+  onClick: () => void;
 };
 
 const CloseButton = React.memo((props: Props) => {
-  const dispatch = useDispatch();
   return (
-    <button className="my-auto focus:outline-none" onClick={() => dispatch(props.action)}>
+    <button className="my-auto focus:outline-none" onClick={props.onClick} data-testid="close-list-button">
       <MdClose />
     </button>
   );
 });
 
 export default CloseButton;
-

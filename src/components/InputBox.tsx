@@ -1,16 +1,17 @@
-import React, {useEffect, useRef, useState} from "react";
-import {createInputTextOnKeyDownCallback} from "../lib/inputText";
-import {useDispatch} from "react-redux";
-import {addList} from "../store/listsSlice";
+import React, { useEffect, useRef, useState } from "react";
+import { createInputTextOnKeyDownCallback } from "../lib/inputText";
 
-export default function NewList() {
-  const dispatch = useDispatch();
+type Props = {
+  inputHandler: (value: string) => void;
+  label: string;
+};
 
+export default function InputBox(props: Props) {
   const [inputMode, setInputMode] = useState(false);
   const inputEl = useRef<HTMLInputElement>(null);
 
   const onKeyDown = createInputTextOnKeyDownCallback((input) => {
-    dispatch(addList({boardId: "default-board", name: input}));
+    props.inputHandler(input);
   });
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function NewList() {
           />
         ) : (
           <h1 className="cursor-pointer " onClick={() => setInputMode(true)}>
-            + New Todo List
+            {props.label}
           </h1>
         )}
       </div>
