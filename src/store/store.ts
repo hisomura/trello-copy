@@ -18,7 +18,7 @@ const persistConfig = {
   storage
 }
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   cards: cardsReducer,
   lists: listsReducer,
 })
