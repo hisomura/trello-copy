@@ -12,7 +12,7 @@ export default function CardContainer(props: Props) {
   return (
     <Draggable draggableId={props.card.id} index={props.index}>
       {(provided) => (
-        <li
+        <div
           className="flex py-2 border-t"
           ref={provided.innerRef}
           {...provided.draggableProps}
@@ -20,7 +20,7 @@ export default function CardContainer(props: Props) {
         >
           <input className="my-auto mr-2" type="checkbox" />
           <p className="text-sm">{props.card.name}</p>
-        </li>
+        </div>
       )}
     </Draggable>
   );

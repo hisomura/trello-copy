@@ -23,10 +23,10 @@ export default function Home() {
     );
   };
   return (
-    <div className="max-w-xl mr-auto pt-8 z-0 flex justify-start">
+    <div className="pt-8 pl-6 flex justify-start items-start">
       <DragDropContext onDragEnd={dragEndHandler}>
-        {lists.map((l) => (
-          <ListContainer key={l.id} list={l} />
+        {lists.map((list) => (
+          <ListContainer key={list.id} list={list} />
         ))}
       </DragDropContext>
       <NewList />
