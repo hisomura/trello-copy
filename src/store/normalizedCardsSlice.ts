@@ -43,9 +43,30 @@ export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
         state.idsPerList[listId].splice(index, 1);
       });
     },
+
+    moveCards: (state, action: { payload: { ids: string[]; toListId: string; index: number } }) => {
+      const markId = state.idsPerList[action.payload.toListId][action.payload.index];
+      action.payload.ids.forEach((id) => {
+        if (!(id in state.entities)) throw new Error(`Card: ${id} Not Found.`);
+
+        const listId = state.entities[id].listId;
+        state.entities[id].listId = action.payload.toListId;
+        // fix saving order
+        state.idsPerList[listId] = state.idsPerList[listId].filter((item) => item !== id);
+      });
+
+      const index =state.idsPerList[action.payload.toListId].findIndex((item) => item === markId);
+      if (index !== -1) {
+        state.idsPerList[action.payload.toListId].splice(index, 0, ...action.payload.ids)
+      } else {
+        state.idsPerList[action.payload.toListId] = [
+          ...state.idsPerList[action.payload.toListId], ...action.payload.ids
+        ]
+      }
+    },
   },
 });
 
-export const { addCard, archiveCards } = cardsSlice.actions;
+export const { addCard, archiveCards, moveCards } = cardsSlice.actions;
 
 export default cardsSlice.reducer;
