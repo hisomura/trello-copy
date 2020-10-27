@@ -34,15 +34,18 @@ export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
         archived: false,
       };
     },
+    archiveCards: (state, action: { payload: { ids: string[] } }) => {
+      action.payload.ids.forEach((id) => {
+        const listId = state.entities[id].listId;
+        state.entities[id].archived = true;
+        state.archivedIds.push(id);
+        const index = state.idsPerList[listId].findIndex((i) => i === id);
+        state.idsPerList[listId].splice(index, 1);
+      });
+    },
   },
 });
 
-export const { addCard, deleteCards, closeCards, openCards, moveCards } = cardsSlice.actions;
-
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
-export const selectOpenCards = (cards: Card[]) => cards.filter((t) => !t.archived);
-export const selectCards = (state: { cards: Card[] }) => state.cards;
+export const { addCard, archiveCards } = cardsSlice.actions;
 
 export default cardsSlice.reducer;

@@ -1,4 +1,4 @@
-import cards, { addCard, State } from "./normalizedCardsSlice";
+import cards, { addCard, archiveCards, State } from "./normalizedCardsSlice";
 
 describe("cardsSlice", () => {
   const prevState: State = {
@@ -17,10 +17,21 @@ describe("cardsSlice", () => {
       type: addCard.type,
       payload: { name: "foobar", listId: "list-id-1" },
     });
-    expect(nextState.idsPerList["list-id-1"].length).toBe(3);
+    expect(nextState.idsPerList["list-id-1"]).toHaveLength(3);
     const newId = nextState.idsPerList["list-id-1"][2];
     expect(nextState.entities[newId].listId).toBe("list-id-1");
     expect(nextState.entities[newId].name).toBe("foobar");
-    expect(nextState.entities[newId].archived).toBe(false);
+    expect(nextState.entities[newId].archived).toBeFalsy();
+  });
+
+  test("archiveCard archives a card.", () => {
+    const nextState = cards(prevState, {
+      type: archiveCards.type,
+      payload: { ids: ["id-1", "id-2"] },
+    });
+    expect(nextState.idsPerList["list-id-1"].length).toBe(0);
+    expect(nextState.entities['id-1'].archived).toBeTruthy();
+    expect(nextState.entities['id-2'].archived).toBeTruthy();
+    expect(nextState.archivedIds).toHaveLength(4);
   });
 });
