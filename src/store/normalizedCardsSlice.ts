@@ -8,7 +8,7 @@ export type Card = {
   archived: boolean;
 };
 
-export type State = {
+export type CardsState = {
   entities: { [key: string]: Card };
   archivedIds: string[];
   idsPerList: {
@@ -16,7 +16,15 @@ export type State = {
   };
 };
 
-export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
+function pushIds(idsPerList: CardsState["idsPerList"], listId: Card["listId"], ids: Card["id"][]) {
+  if (idsPerList[listId] === undefined) {
+    idsPerList[listId] = ids;
+  } else {
+    idsPerList[listId].push(...ids);
+  }
+}
+
+export const cardsSlice = createSlice<CardsState, SliceCaseReducers<CardsState>>({
   name: "cards",
   initialState: {
     idsPerList: {},
@@ -26,7 +34,7 @@ export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
   reducers: {
     addCard: (state, action: { payload: { listId: string; name: string } }) => {
       const id = uuidV4();
-      state.idsPerList[action.payload.listId].push(id);
+      pushIds(state.idsPerList, action.payload.listId, [id]);
       state.entities[id] = {
         id: uuidV4(),
         listId: action.payload.listId,
@@ -45,6 +53,9 @@ export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
     },
 
     moveCards: (state, action: { payload: { ids: string[]; toListId: string; index: number } }) => {
+      if (state.idsPerList[action.payload.toListId] === undefined) {
+        state.idsPerList[action.payload.toListId] = [];
+      }
       const markId = state.idsPerList[action.payload.toListId][action.payload.index];
       action.payload.ids.forEach((id) => {
         if (!(id in state.entities)) throw new Error(`Card: ${id} Not Found.`);
@@ -55,13 +66,14 @@ export const cardsSlice = createSlice<State, SliceCaseReducers<State>>({
         state.idsPerList[listId] = state.idsPerList[listId].filter((item) => item !== id);
       });
 
-      const index =state.idsPerList[action.payload.toListId].findIndex((item) => item === markId);
+      const index = state.idsPerList[action.payload.toListId].findIndex((item) => item === markId);
       if (index !== -1) {
-        state.idsPerList[action.payload.toListId].splice(index, 0, ...action.payload.ids)
+        state.idsPerList[action.payload.toListId].splice(index, 0, ...action.payload.ids);
       } else {
         state.idsPerList[action.payload.toListId] = [
-          ...state.idsPerList[action.payload.toListId], ...action.payload.ids
-        ]
+          ...state.idsPerList[action.payload.toListId],
+          ...action.payload.ids,
+        ];
       }
     },
   },

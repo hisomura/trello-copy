@@ -1,7 +1,7 @@
-import cards, { addCard, archiveCards, moveCards, State } from "./normalizedCardsSlice";
+import cards, { addCard, archiveCards, moveCards, CardsState } from "./normalizedCardsSlice";
 
 describe("cardsSlice", () => {
-  const prevState: State = {
+  const prevState: CardsState = {
     idsPerList: { "list-id-1": ["id-1", "id-2"] },
     archivedIds: ["id-3", "id-4"],
     entities: {
@@ -24,6 +24,18 @@ describe("cardsSlice", () => {
     expect(nextState.entities[newId].archived).toBeFalsy();
   });
 
+  test("addCard adds a new card to uninitialized list.", () => {
+    const nextState = cards(prevState, {
+      type: addCard.type,
+      payload: { name: "foobar", listId: "list-id-x" },
+    });
+    expect(nextState.idsPerList["list-id-x"]).toHaveLength(1);
+    const newId = nextState.idsPerList["list-id-x"][0];
+    expect(nextState.entities[newId].listId).toBe("list-id-x");
+    expect(nextState.entities[newId].name).toBe("foobar");
+    expect(nextState.entities[newId].archived).toBeFalsy();
+  });
+
   test("archiveCard archives a card.", () => {
     const nextState = cards(prevState, {
       type: archiveCards.type,
@@ -37,7 +49,7 @@ describe("cardsSlice", () => {
 });
 
 describe("cardsSlice.moveCards", () => {
-  const prevState: State = {
+  const prevState: CardsState = {
     idsPerList: {
       "list-id-1": ["id-1", "id-2", "id-4", "id-5"],
       "list-id-2": ["id-6", "id-7"],
@@ -112,5 +124,20 @@ describe("cardsSlice.moveCards", () => {
     expect(nextCards.entities["id-1"].listId).toBe("list-id-3");
     expect(nextCards.entities["id-4"].listId).toBe("list-id-3");
     expect(nextCards.entities["id-6"].listId).toBe("list-id-3");
+  });
+
+  test("moves cards to uninitialized list", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4", "id-6"], toListId: "list-id-x", index: 0 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
+    expect(nextCards.idsPerList["list-id-2"]).toEqual(["id-7"]);
+    expect(nextCards.idsPerList["list-id-x"]).toEqual(["id-1", "id-4", "id-6"]);
+
+    expect(nextCards.entities["id-1"].listId).toBe("list-id-x");
+    expect(nextCards.entities["id-4"].listId).toBe("list-id-x");
+    expect(nextCards.entities["id-6"].listId).toBe("list-id-x");
   });
 });
