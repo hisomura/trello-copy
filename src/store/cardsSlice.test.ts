@@ -1,89 +1,143 @@
-import cards, { addCard, closeCards, deleteCards, moveCards, openCards, Card } from "./cardsSlice";
+import cards, { addCard, archiveCards, moveCards, CardsState } from "./cardsSlice";
 
 describe("cardsSlice", () => {
-  const prevCards: Card[] = [
-    { listId: "list-id-1", id: "id-1", name: "foobar1", archived: false, order: 1 },
-    { listId: "list-id-1", id: "id-2", name: "foobar2", archived: false, order: 2 },
-    { listId: "list-id-1", id: "id-3", name: "foobar3", archived: true, order: 3 },
-    { listId: "list-id-1", id: "id-4", name: "foobar4", archived: true, order: 4 },
-  ];
+  const prevState: CardsState = {
+    idsPerList: { "list-id-1": ["id-1", "id-2"] },
+    archivedIds: ["id-3", "id-4"],
+    entities: {
+      "id-1": { id: "id-1", listId: "list-id-1", name: "foobar1", archived: false },
+      "id-2": { id: "id-2", listId: "list-id-1", name: "foobar2", archived: false },
+      "id-3": { id: "id-3", listId: "list-id-1", name: "foobar3", archived: true },
+      "id-4": { id: "id-4", listId: "list-id-1", name: "foobar4", archived: true },
+    },
+  };
 
   test("addCard adds a new card.", () => {
-    const nextCards = cards(prevCards, {
+    const nextState = cards(prevState, {
       type: addCard.type,
       payload: { name: "foobar", listId: "list-id-1" },
     });
-    expect(nextCards.length).toBe(5);
-    expect(nextCards[4].listId).toBe("list-id-1");
-    expect(nextCards[4].name).toBe("foobar");
-    expect(nextCards[4].archived).toBe(false);
-    expect(nextCards[4].order).toBe(5);
+    expect(nextState.idsPerList["list-id-1"]).toHaveLength(3);
+    const newId = nextState.idsPerList["list-id-1"][2];
+    expect(nextState.entities[newId].listId).toBe("list-id-1");
+    expect(nextState.entities[newId].name).toBe("foobar");
+    expect(nextState.entities[newId].archived).toBeFalsy();
   });
 
-  test("deleteCards deletes a card.", () => {
-    const nextCards = cards(prevCards, { type: deleteCards.type, payload: { ids: ["id-2"] } });
-    expect(nextCards.length).toBe(3);
+  test("addCard adds a new card to uninitialized list.", () => {
+    const nextState = cards(prevState, {
+      type: addCard.type,
+      payload: { name: "foobar", listId: "list-id-x" },
+    });
+    expect(nextState.idsPerList["list-id-x"]).toHaveLength(1);
+    const newId = nextState.idsPerList["list-id-x"][0];
+    expect(nextState.entities[newId].listId).toBe("list-id-x");
+    expect(nextState.entities[newId].name).toBe("foobar");
+    expect(nextState.entities[newId].archived).toBeFalsy();
   });
 
-  test("deleteCards deletes cards.", () => {
-    const nextCards = cards(prevCards, { type: deleteCards.type, payload: { ids: ["id-1", "id-2", "id-3"] } });
-    expect(nextCards.length).toBe(1);
-  });
-
-  test("closeCards closes cards.", () => {
-    const nextCards = cards(prevCards, { type: closeCards.type, payload: { ids: ["id-1", "id-2"] } });
-    expect(nextCards.filter((t) => t.archived).length).toBe(4);
-  });
-
-  test("openCards opens cards.", () => {
-    const nextCards = cards(prevCards, { type: openCards.type, payload: { ids: ["id-3"] } });
-    expect(nextCards.filter((t) => !t.archived).length).toBe(3);
-    expect(nextCards[2]).toEqual({ listId: "list-id-1", id: "id-3", name: "foobar3", archived: false, order: 3 });
+  test("archiveCard archives a card.", () => {
+    const nextState = cards(prevState, {
+      type: archiveCards.type,
+      payload: { ids: ["id-1", "id-2"] },
+    });
+    expect(nextState.idsPerList["list-id-1"].length).toBe(0);
+    expect(nextState.entities["id-1"].archived).toBeTruthy();
+    expect(nextState.entities["id-2"].archived).toBeTruthy();
+    expect(nextState.archivedIds).toHaveLength(4);
   });
 });
 
 describe("cardsSlice.moveCards", () => {
-  const prevCards: Card[] = [
-    { listId: "list-id-1", id: "id-1", name: "foobar1", archived: false, order: 1 },
-    { listId: "list-id-1", id: "id-2", name: "foobar2", archived: false, order: 2 },
-    { listId: "list-id-1", id: "id-3", name: "foobar3", archived: true, order: 3 },
-    { listId: "list-id-1", id: "id-4", name: "foobar4", archived: true, order: 4 },
-  ];
-  test("moves cards to another Cards", () => {
-    const nextCards = cards(prevCards, {
+  const prevState: CardsState = {
+    idsPerList: {
+      "list-id-1": ["id-1", "id-2", "id-4", "id-5"],
+      "list-id-2": ["id-6", "id-7"],
+      "list-id-3": [],
+    },
+    archivedIds: ["id-3"],
+    entities: {
+      "id-1": { id: "id-1", listId: "list-id-1", name: "foobar1", archived: false },
+      "id-2": { id: "id-2", listId: "list-id-1", name: "foobar2", archived: false },
+      "id-3": { id: "id-3", listId: "list-id-1", name: "foobar3", archived: true },
+      "id-4": { id: "id-4", listId: "list-id-1", name: "foobar4", archived: false },
+      "id-5": { id: "id-5", listId: "list-id-1", name: "foobar5", archived: false },
+      "id-6": { id: "id-6", listId: "list-id-2", name: "foobar6", archived: false },
+      "id-7": { id: "id-7", listId: "list-id-2", name: "foobar7", archived: false },
+    },
+  };
+
+  test("moves cards to the head of the same list", () => {
+    const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { targetIds: ["id-1", "id-3"], fromListId: "list-id-1", toListId: "new-list-id1", index: 0 },
+      payload: { ids: ["id-4", "id-5"], toListId: "list-id-1", index: 0 },
     });
-    expect(nextCards).toEqual([
-      { listId: "new-list-id1", id: "id-1", name: "foobar1", archived: false, order: 1 },
-      { listId: "list-id-1", id: "id-2", name: "foobar2", archived: false, order: 1 },
-      { listId: "new-list-id1", id: "id-3", name: "foobar3", archived: true, order: 2 },
-      { listId: "list-id-1", id: "id-4", name: "foobar4", archived: true, order: 2 },
-    ]);
-  });
-  test("moves cards to last of the same list.", () => {
-    const nextCards = cards(prevCards, {
-      type: moveCards.type,
-      payload: { targetIds: ["id-1", "id-3"], fromListId: "list-id-1", toListId: "list-id-1", index: 2 },
-    });
-    expect(nextCards).toEqual([
-      { listId: "list-id-1", id: "id-1", name: "foobar1", archived: false, order: 3 },
-      { listId: "list-id-1", id: "id-2", name: "foobar2", archived: false, order: 1 },
-      { listId: "list-id-1", id: "id-3", name: "foobar3", archived: true, order: 4 },
-      { listId: "list-id-1", id: "id-4", name: "foobar4", archived: true, order: 2 },
-    ]);
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-4", "id-5", "id-1", "id-2"]);
   });
 
-  test("moves cards to first of the same list.", () => {
-    const nextCards = cards(prevCards, {
+  test("moves cards to the end of the same list", () => {
+    const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { targetIds: ["id-3", "id-4"], fromListId: "list-id-1", toListId: "list-id-1", index: 0 },
+      payload: { ids: ["id-1", "id-2"], toListId: "list-id-1", index: 4 },
     });
-    expect(nextCards).toEqual([
-      { listId: "list-id-1", id: "id-1", name: "foobar1", archived: false, order: 3 },
-      { listId: "list-id-1", id: "id-2", name: "foobar2", archived: false, order: 4 },
-      { listId: "list-id-1", id: "id-3", name: "foobar3", archived: true, order: 1 },
-      { listId: "list-id-1", id: "id-4", name: "foobar4", archived: true, order: 2 },
-    ]);
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-4", "id-5", "id-1", "id-2"]);
+  });
+
+  test("moves cards to the head of another list.", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4"], toListId: "list-id-2", index: 0 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
+    expect(nextCards.idsPerList["list-id-2"]).toEqual(["id-1", "id-4", "id-6", "id-7"]);
+
+    expect(nextCards.entities["id-1"].listId).toBe("list-id-2");
+    expect(nextCards.entities["id-4"].listId).toBe("list-id-2");
+  });
+
+  test("moves cards to the end of another list.", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4"], toListId: "list-id-2", index: 2 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
+    expect(nextCards.idsPerList["list-id-2"]).toEqual(["id-6", "id-7", "id-1", "id-4"]);
+
+    expect(nextCards.entities["id-1"].listId).toBe("list-id-2");
+    expect(nextCards.entities["id-4"].listId).toBe("list-id-2");
+  });
+
+  test("moves cards to empty list", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4", "id-6"], toListId: "list-id-3", index: 0 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
+    expect(nextCards.idsPerList["list-id-2"]).toEqual(["id-7"]);
+    expect(nextCards.idsPerList["list-id-3"]).toEqual(["id-1", "id-4", "id-6"]);
+
+    expect(nextCards.entities["id-1"].listId).toBe("list-id-3");
+    expect(nextCards.entities["id-4"].listId).toBe("list-id-3");
+    expect(nextCards.entities["id-6"].listId).toBe("list-id-3");
+  });
+
+  test("moves cards to uninitialized list", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4", "id-6"], toListId: "list-id-x", index: 0 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
+    expect(nextCards.idsPerList["list-id-2"]).toEqual(["id-7"]);
+    expect(nextCards.idsPerList["list-id-x"]).toEqual(["id-1", "id-4", "id-6"]);
+
+    expect(nextCards.entities["id-1"].listId).toBe("list-id-x");
+    expect(nextCards.entities["id-4"].listId).toBe("list-id-x");
+    expect(nextCards.entities["id-6"].listId).toBe("list-id-x");
   });
 });

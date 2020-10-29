@@ -11,15 +11,7 @@ export type List = {
 
 export const listsSlice = createSlice({
   name: "lists",
-  initialState: [
-    {
-      boardId: "default-board",
-      id: "default-list",
-      name: "default list",
-      archived: false,
-      order: 1,
-    },
-  ] as List[],
+  initialState: [] as List[],
   reducers: {
     addList: (lists, action: { payload: { boardId: string; name: string } }) => {
       lists.push({

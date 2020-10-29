@@ -15,8 +15,7 @@ export default function Home() {
 
     dispatch(
       moveCards({
-        targetIds: [result.draggableId],
-        fromListId: result.source.droppableId,
+        ids: [result.draggableId],
         toListId: result.destination.droppableId,
         index: result.destination.index,
       })

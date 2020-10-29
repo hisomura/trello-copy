@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCard, Card } from "../store/cardsSlice";
+import { addCard, CardsState } from "../store/cardsSlice";
 import { createInputTextOnKeyDownCallback } from "../lib/inputText";
 import { archiveLists, List } from "../store/listsSlice";
 import { Droppable } from "react-beautiful-dnd";
@@ -13,21 +13,7 @@ type Props = {
 
 export default function ListContainer(props: Props) {
   const dispatch = useDispatch();
-  const cards = useSelector(
-    (state: { cards: Card[] }) => {
-      const filtered = state.cards.filter((card) => card.listId === props.list.id);
-      filtered.sort((a, b) => a.order - b.order);
-      return filtered;
-    },
-    (left, right) => {
-      if (left.length !== right.length) return false;
-      for (let i = 0; i < left.length; i += 1) {
-        if (left[i] !== right[i]) return false;
-      }
-
-      return true;
-    }
-  );
+  const cardIdsBelongList = useSelector((state: { cards: CardsState }) => state.cards.idsPerList[props.list.id] ?? []);
   const onKeyDown = createInputTextOnKeyDownCallback((input) =>
     dispatch(addCard({ listId: props.list.id, name: input }))
   );
@@ -50,8 +36,8 @@ export default function ListContainer(props: Props) {
       <Droppable droppableId={props.list.id}>
         {(provided, _snapshot) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            {cards.map((card, index) => (
-              <CardContainer key={card.id} index={index} card={card} />
+            {cardIdsBelongList.map((cardId, index) => (
+              <CardContainer key={cardId} index={index} cardId={cardId} />
             ))}
             {provided.placeholder}
           </div>
