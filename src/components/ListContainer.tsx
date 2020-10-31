@@ -19,7 +19,7 @@ export default function ListContainer(props: Props) {
   );
 
   const archiveList = useCallback(() => {
-    archiveLists({ ids: [props.list.id] });
+    dispatch(archiveLists({ ids: [props.list.id] }));
   }, [props.list.id]);
 
   return (
