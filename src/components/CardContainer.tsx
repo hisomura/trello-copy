@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { CardsState } from "../store/cardsSlice";
-import { useSelector } from "react-redux";
+import { archiveCards, CardsState } from "../store/cardsSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
   cardId: string;
@@ -10,6 +10,11 @@ type Props = {
 
 const CardContainer: React.FC<Props> = (props) => {
   const cardName = useSelector((state: { cards: CardsState }) => state.cards.entities[props.cardId].name);
+  const dispatch = useDispatch();
+  const archiveHandler = useCallback(() => {
+    dispatch(archiveCards({ ids: [props.cardId] }));
+  }, [props.cardId]);
+
   return (
     <Draggable draggableId={props.cardId} index={props.index}>
       {(provided) => (
@@ -19,7 +24,7 @@ const CardContainer: React.FC<Props> = (props) => {
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <input className="my-auto mr-2" type="checkbox" />
+          <input className="my-auto mr-2" type="checkbox" onClick={archiveHandler} />
           <p className="text-sm">{cardName}</p>
         </div>
       )}
@@ -27,4 +32,4 @@ const CardContainer: React.FC<Props> = (props) => {
   );
 };
 
-export default CardContainer
+export default CardContainer;
