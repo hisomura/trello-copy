@@ -76,6 +76,15 @@ describe("cardsSlice.moveCards", () => {
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-4", "id-5", "id-1", "id-2"]);
   });
 
+  test("moves cards to middle of the same list", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-4", "id-5"], toListId: "list-id-1", index: 1 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-1", "id-4", "id-5", "id-2"]);
+  });
+
   test("moves cards to the end of the same list", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
