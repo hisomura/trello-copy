@@ -10,21 +10,21 @@ export const multiTaskDragSlice = createSlice<MultiTaskDragState, SliceCaseReduc
     selectedTaskIds: [],
   },
   reducers: {
-    addTaskIds(state, action: { payload: { taskIds: string[] } }) {
+    selectTasks(state, action: { payload: { taskIds: string[] } }) {
       const idsSet = new Set([...state.selectedTaskIds, ...action.payload.taskIds]);
       state.selectedTaskIds = Array.from(idsSet);
     },
-    deleteTaskIds(state, action: { payload: { taskIds: string[] } }) {
+    unselectTasks(state, action: { payload: { taskIds: string[] } }) {
       state.selectedTaskIds = state.selectedTaskIds.filter(
         (selectedTaskId) => !action.payload.taskIds.includes(selectedTaskId)
       );
     },
-    clearTaskIds(state, _action) {
+    unselectAllTasks(state, _action) {
       state.selectedTaskIds = [];
     },
   },
 });
 
-export const { addTaskIds, deleteTaskIds, clearTaskIds } = multiTaskDragSlice.actions;
+export const { selectTasks, unselectTasks, unselectAllTasks } = multiTaskDragSlice.actions;
 
 export default multiTaskDragSlice.reducer;
