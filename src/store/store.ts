@@ -3,6 +3,7 @@ import { FLUSH, PAUSE, PERSIST, persistReducer, persistStore, PURGE, REGISTER, R
 import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 import cardsReducer from "./cardsSlice";
 import listsReducer from "./listsSlice";
+import selectionsReducer from "./selectionsSlice";
 
 const persistConfig = {
   key: "root",
@@ -12,6 +13,7 @@ const persistConfig = {
 export const rootReducer = combineReducers({
   cards: cardsReducer,
   lists: listsReducer,
+  selections: selectionsReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -1,4 +1,4 @@
-import multiTaskDrag, { selectTasks, unselectTasks, unselectAllTasks } from "./multiTaskDragSlice";
+import multiTaskDrag, { selectTasks, unselectTasks, unselectAllTasks } from "./selectionsSlice";
 
 describe("multiTaskDragSlice", () => {
   test("selects tasks", () => {

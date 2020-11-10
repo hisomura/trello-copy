@@ -1,11 +1,11 @@
 import { createSlice, SliceCaseReducers } from "@reduxjs/toolkit";
 
-export type MultiTaskDragState = {
+type State = {
   selectedTaskIds: string[];
 };
 
-export const multiTaskDragSlice = createSlice<MultiTaskDragState, SliceCaseReducers<MultiTaskDragState>>({
-  name: "lists",
+export const selectionsSlice = createSlice<State, SliceCaseReducers<State>>({
+  name: "selections",
   initialState: {
     selectedTaskIds: [],
   },
@@ -25,6 +25,6 @@ export const multiTaskDragSlice = createSlice<MultiTaskDragState, SliceCaseReduc
   },
 });
 
-export const { selectTasks, unselectTasks, unselectAllTasks } = multiTaskDragSlice.actions;
+export const { selectTasks, unselectTasks, unselectAllTasks } = selectionsSlice.actions;
 
-export default multiTaskDragSlice.reducer;
+export default selectionsSlice.reducer;
