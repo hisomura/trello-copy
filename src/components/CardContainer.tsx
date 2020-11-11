@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, useCallback } from "react";
-import { Draggable } from "react-beautiful-dnd";
+import { Draggable, DraggingStyle, NotDraggingStyle } from "react-beautiful-dnd";
 import { archiveCards, CardsState } from "../store/cardsSlice";
 import { selectTasks, unselectAllTasks } from "../store/selectionsSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +15,11 @@ const wasToggleInSelectionGroupKeyUsed = (
   const isUsingWindows = navigator.platform.indexOf("Win") >= 0;
   return isUsingWindows ? event.ctrlKey : event.metaKey;
 };
+
+const getStyle = (isSelected: boolean, style?: DraggingStyle | NotDraggingStyle) => ({
+  ...style,
+  backgroundColor: isSelected ? "red" : "white",
+});
 
 const CardContainer: React.FC<Props> = (props) => {
   const cardName = useSelector((state: { cards: CardsState }) => state.cards.entities[props.cardId].name);
@@ -47,12 +52,11 @@ const CardContainer: React.FC<Props> = (props) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          style={getStyle(isSelected, provided.draggableProps.style)}
           onClick={onClickHandler}
         >
           <input className="my-auto mr-2" type="checkbox" onClick={archiveHandler} />
-          <p style={{ backgroundColor: isSelected ? "red" : "white" }} className="text-sm">
-            {cardName}
-          </p>
+          <p className="text-sm">{cardName}</p>
         </div>
       )}
     </Draggable>

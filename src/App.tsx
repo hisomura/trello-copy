@@ -5,6 +5,7 @@ import { addList, selectActiveLists } from "./store/listsSlice";
 import InputBox from "./components/InputBox";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import { moveCards } from "./store/cardsSlice";
+import { unselectAllTasks } from "./store/selectionsSlice";
 
 export default function Home() {
   const lists = useSelector(selectActiveLists);
@@ -20,6 +21,7 @@ export default function Home() {
         index: result.destination.index,
       })
     );
+    dispatch(unselectAllTasks({}));
   };
 
   const addTodoList = useCallback((input: string) => {
