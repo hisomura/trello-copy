@@ -1,7 +1,7 @@
 import React, { MouseEventHandler, useCallback } from "react";
 import { Draggable, DraggingStyle, NotDraggingStyle } from "react-beautiful-dnd";
 import { archiveCards, CardsState } from "../store/cardsSlice";
-import { selectTasks, unselectAllTasks } from "../store/selectionsSlice";
+import { selectCards, SelectionState, toggleCardSelection, unselectAllCards } from "../store/selectionsSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 type Props = {
@@ -23,8 +23,8 @@ const getStyle = (isSelected: boolean, style?: DraggingStyle | NotDraggingStyle)
 
 const CardContainer: React.FC<Props> = (props) => {
   const cardName = useSelector((state: { cards: CardsState }) => state.cards.entities[props.cardId].name);
-  const isSelected = useSelector((state: { selections: { selectedTaskIds: string[] } }) =>
-    state.selections.selectedTaskIds.includes(props.cardId)
+  const isSelected = useSelector((state: { selections: SelectionState }) =>
+    state.selections.selectedCardIds.includes(props.cardId)
   );
   const dispatch = useDispatch();
   const archiveHandler = useCallback(() => {
@@ -37,9 +37,12 @@ const CardContainer: React.FC<Props> = (props) => {
 
       event.preventDefault();
 
-      if (!wasToggleInSelectionGroupKeyUsed(event)) dispatch(unselectAllTasks({}));
-
-      dispatch(selectTasks({ taskIds: [props.cardId] }));
+      if (wasToggleInSelectionGroupKeyUsed(event)) {
+        dispatch(toggleCardSelection({ taskId: props.cardId }));
+      } else {
+        dispatch(unselectAllCards({}));
+        dispatch(selectCards({ taskIds: [props.cardId] }));
+      }
     },
     [props.cardId]
   );
