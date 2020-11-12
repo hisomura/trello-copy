@@ -52,26 +52,32 @@ export const cardsSlice = createSlice<CardsState, SliceCaseReducers<CardsState>>
       });
     },
 
-    moveCards: (state, action: { payload: { ids: string[]; toListId: string; index: number } }) => {
-      if (state.idsPerList[action.payload.toListId] === undefined) {
-        state.idsPerList[action.payload.toListId] = [];
-      }
-      const markId = state.idsPerList[action.payload.toListId][action.payload.index];
+    moveCards: (state, action: { payload: { ids: string[]; destListId: string; destIndex: number } }) => {
+      const { ids, destListId, destIndex } = action.payload;
+
+      if (state.idsPerList[destListId] === undefined) state.idsPerList[destListId] = [];
+
+      let newDestIndex = destIndex;
+      const toListTargetCardIds = ids.filter((id) => state.entities[id].listId === destListId);
+      state.idsPerList[destListId].forEach((id , i) => {
+        if (toListTargetCardIds.includes(id) && destIndex > i) {
+          newDestIndex -= 1
+        }
+      })
       action.payload.ids.forEach((id) => {
         if (!(id in state.entities)) throw new Error(`Card: ${id} Not Found.`);
 
         const listId = state.entities[id].listId;
-        state.entities[id].listId = action.payload.toListId;
+        state.entities[id].listId = action.payload.destListId;
         // fix saving order
         state.idsPerList[listId] = state.idsPerList[listId].filter((item) => item !== id);
       });
 
-      const index = state.idsPerList[action.payload.toListId].findIndex((item) => item === markId);
-      if (index !== -1) {
-        state.idsPerList[action.payload.toListId].splice(index, 0, ...action.payload.ids);
+      if (destIndex !== -1) {
+        state.idsPerList[action.payload.destListId].splice(newDestIndex, 0, ...action.payload.ids);
       } else {
-        state.idsPerList[action.payload.toListId] = [
-          ...state.idsPerList[action.payload.toListId],
+        state.idsPerList[action.payload.destListId] = [
+          ...state.idsPerList[action.payload.destListId],
           ...action.payload.ids,
         ];
       }

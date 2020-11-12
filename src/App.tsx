@@ -3,26 +3,31 @@ import { useDispatch, useSelector } from "react-redux";
 import ListContainer from "./components/ListContainer";
 import { addList, selectActiveLists } from "./store/listsSlice";
 import InputBox from "./components/InputBox";
-import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, DropResult, ResponderProvided } from "react-beautiful-dnd";
 import { moveCards } from "./store/cardsSlice";
 import { unselectAllCards } from "./store/selectionsSlice";
-import store from "./store/store"
+import store from "./store/store";
 
 const clickEventHandler: EventHandler<React.MouseEvent<HTMLDivElement>> = (event) => {
   if (event.isDefaultPrevented()) return;
 
-  store.dispatch(unselectAllCards({}))
+  store.dispatch(unselectAllCards({}));
 };
 
-const dragEndHandler = (result: DropResult) => {
-  if (!result.destination) return;
+const dragEndHandler = (result: DropResult, _provided: ResponderProvided) => {
+  const { source, destination, draggableId } = result;
+  if (!destination) return;
+  if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-  console.log(result)
+  const destIndex =
+    source.droppableId === destination.droppableId && source.index < destination.index
+      ? destination.index + 1
+      : destination.index;
   store.dispatch(
     moveCards({
-      ids: [result.draggableId],
-      toListId: result.destination.droppableId,
-      index: result.destination.index,
+      ids: [draggableId],
+      destListId: destination.droppableId,
+      destIndex,
     })
   );
   store.dispatch(unselectAllCards({}));

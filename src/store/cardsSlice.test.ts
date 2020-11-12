@@ -70,7 +70,7 @@ describe("cardsSlice.moveCards", () => {
   test("moves cards to the head of the same list", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-4", "id-5"], toListId: "list-id-1", index: 0 },
+      payload: { ids: ["id-4", "id-5"], destListId: "list-id-1", destIndex: 0 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-4", "id-5", "id-1", "id-2"]);
@@ -79,16 +79,43 @@ describe("cardsSlice.moveCards", () => {
   test("moves cards to the end of the same list", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-1", "id-2"], toListId: "list-id-1", index: 4 },
+      payload: { ids: ["id-1", "id-2"], destListId: "list-id-1", destIndex: 4 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-4", "id-5", "id-1", "id-2"]);
   });
 
+  test("moves a card to original index", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1"], destListId: "list-id-1", destIndex: 0 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-1", "id-2", "id-4", "id-5"]);
+  });
+
+  test("moves a card to next index", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1"], destListId: "list-id-1", destIndex: 1 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-1", "id-2", "id-4", "id-5"]);
+  });
+
+  test("moves cards to middle index", () => {
+    const nextCards = cards(prevState, {
+      type: moveCards.type,
+      payload: { ids: ["id-1", "id-4"], destListId: "list-id-1", destIndex: 2 },
+    });
+
+    expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-1", "id-4", "id-5"]);
+  });
+
   test("moves cards to the head of another list.", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-1", "id-4"], toListId: "list-id-2", index: 0 },
+      payload: { ids: ["id-1", "id-4"], destListId: "list-id-2", destIndex: 0 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
@@ -101,7 +128,7 @@ describe("cardsSlice.moveCards", () => {
   test("moves cards to the end of another list.", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-1", "id-4"], toListId: "list-id-2", index: 2 },
+      payload: { ids: ["id-1", "id-4"], destListId: "list-id-2", destIndex: 2 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
@@ -114,7 +141,7 @@ describe("cardsSlice.moveCards", () => {
   test("moves cards to empty list", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-1", "id-4", "id-6"], toListId: "list-id-3", index: 0 },
+      payload: { ids: ["id-1", "id-4", "id-6"], destListId: "list-id-3", destIndex: 0 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
@@ -129,7 +156,7 @@ describe("cardsSlice.moveCards", () => {
   test("moves cards to uninitialized list", () => {
     const nextCards = cards(prevState, {
       type: moveCards.type,
-      payload: { ids: ["id-1", "id-4", "id-6"], toListId: "list-id-x", index: 0 },
+      payload: { ids: ["id-1", "id-4", "id-6"], destListId: "list-id-x", destIndex: 0 },
     });
 
     expect(nextCards.idsPerList["list-id-1"]).toEqual(["id-2", "id-5"]);
