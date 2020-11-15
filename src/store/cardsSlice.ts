@@ -1,4 +1,4 @@
-import { createSlice, SliceCaseReducers } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction, SliceCaseReducers} from "@reduxjs/toolkit";
 import { v4 as uuidV4 } from "uuid";
 
 export type Card = {
@@ -52,7 +52,7 @@ export const cardsSlice = createSlice<CardsState, SliceCaseReducers<CardsState>>
       });
     },
 
-    moveCards: (state, action: { payload: { ids: string[]; destListId: string; destIndex: number } }) => {
+    moveCards: (state, action: PayloadAction<{ ids: string[]; destListId: string; destIndex: number }>) => {
       const { ids, destListId, destIndex } = action.payload;
 
       if (state.idsPerList[destListId] === undefined) state.idsPerList[destListId] = [];

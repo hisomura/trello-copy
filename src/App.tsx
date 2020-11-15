@@ -23,14 +23,16 @@ const dragEndHandler = (result: DropResult, _provided: ResponderProvided) => {
     source.droppableId === destination.droppableId && source.index < destination.index
       ? destination.index + 1
       : destination.index;
+
+  const selectedIds = store.getState().selections.selectedCardIds;
+  const ids = selectedIds.length > 0 ? selectedIds : [draggableId];
   store.dispatch(
     moveCards({
-      ids: [draggableId],
+      ids,
       destListId: destination.droppableId,
       destIndex,
     })
   );
-  store.dispatch(unselectAllCards({}));
 };
 
 export default function Home() {
