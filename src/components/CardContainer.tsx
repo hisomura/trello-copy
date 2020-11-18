@@ -16,9 +16,9 @@ const wasToggleInSelectionGroupKeyUsed = (
   return isUsingWindows ? event.ctrlKey : event.metaKey;
 };
 
-const getStyle = (isSelected: boolean, style?: DraggingStyle | NotDraggingStyle) => ({
+const getStyle = (isSelected: boolean, isDragging: boolean,  style?: DraggingStyle | NotDraggingStyle) => ({
   ...style,
-  backgroundColor: isSelected ? "red" : "white",
+  backgroundColor: (isSelected || isDragging) ? "#ccc" : "white",
 });
 
 const CardContainer: React.FC<Props> = (props) => {
@@ -49,13 +49,13 @@ const CardContainer: React.FC<Props> = (props) => {
 
   return (
     <Draggable draggableId={props.cardId} index={props.index}>
-      {(provided) => (
+      {(provided, snapshot) => (
         <div
           className="flex py-2 border-t"
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          style={getStyle(isSelected, provided.draggableProps.style)}
+          style={getStyle(isSelected, snapshot.isDragging, provided.draggableProps.style)}
           onClick={onClickHandler}
         >
           <input className="my-auto mr-2" type="checkbox" onClick={archiveHandler} />
