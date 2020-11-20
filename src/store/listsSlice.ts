@@ -1,45 +1,29 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 import { v4 as uuidV4 } from "uuid";
+import { RootState } from "./store";
 
 export type List = {
   boardId: string;
   id: string;
   name: string;
-  archived: boolean;
-  order: number;
 };
+
+const listsAdapter = createEntityAdapter<List>();
 
 export const listsSlice = createSlice({
   name: "lists",
-  initialState: [] as List[],
+  initialState: listsAdapter.getInitialState(),
   reducers: {
-    addList: (lists, action: { payload: { boardId: string; name: string } }) => {
-      lists.push({
-        boardId: action.payload.boardId,
-        id: uuidV4(),
-        name: action.payload.name,
-        archived: false,
-        order: lists.filter((t) => t.boardId === action.payload.boardId).length + 1,
-      });
+    addList: (state, action: { payload: { boardId: string; name: string } }) => {
+      const { boardId, name } = action.payload;
+      listsAdapter.addOne(state, { boardId, id: uuidV4(), name });
     },
-    deleteLists: (lists, action: { payload: { ids: string[] } }) => {
-      return lists.filter((t) => !action.payload.ids.includes(t.id));
-    },
-    archiveLists: (lists, action: { payload: { ids: string[] } }) => {
-      return lists.map((t) => (action.payload.ids.includes(t.id) ? { ...t, archived: true } : t));
-    },
-    unArchiveLists: (lists, action: { payload: { ids: string[] } }) => {
-      return lists.map((t) => (action.payload.ids.includes(t.id) ? { ...t, archived: false } : t));
-    },
+    removeList: listsAdapter.removeOne,
   },
 });
 
-export const { addList, deleteLists, archiveLists, unArchiveLists } = listsSlice.actions;
+export const listsActions = listsSlice.actions;
 
-// The function below is called a selector and allows us to select a value from
-// the state. Selectors can also be defined inline where they're used instead of
-// in the slice file. For example: `useSelector((state) => state.counter.value)`
-export const selectLists = (state: { lists: List[] }) => state.lists;
-export const selectActiveLists = (state: { lists: List[] }) => state.lists.filter(list => !list.archived);
+export const listsSelectors = listsAdapter.getSelectors<RootState>((state) => state.lists);
 
 export default listsSlice.reducer;

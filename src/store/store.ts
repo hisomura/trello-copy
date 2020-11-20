@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage for
 import cardsReducer from "./cardsSlice";
 import listsReducer from "./listsSlice";
 import selectionsReducer from "./selectionsSlice";
+import boardsReducer from "./boardsSlice"
 
 const persistConfig = {
   key: "root",
@@ -11,8 +12,9 @@ const persistConfig = {
 };
 
 export const rootReducer = combineReducers({
-  cards: cardsReducer,
+  boards: boardsReducer,
   lists: listsReducer,
+  cards: cardsReducer,
   selections: selectionsReducer
 });
 
@@ -27,5 +29,7 @@ const store = configureStore({
   }),
 });
 export default store;
+
+export type RootState = ReturnType<typeof store.getState>
 
 export const persistor = persistStore(store);

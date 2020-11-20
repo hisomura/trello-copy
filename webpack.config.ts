@@ -1,14 +1,20 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import { Configuration } from "webpack";
+// const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
 
-const devMode = process.env.NODE_ENV !== 'production';
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+// import HtmlWebpackPlugin from "html-webpack-plugin";
 
-module.exports = {
+const path = require("path");
+
+const devMode = process.env.NODE_ENV !== "production";
+
+const config: Configuration = {
   mode: "development",
   entry: "./src/index.tsx",
   output: {
     path: path.resolve(__dirname, "dist"),
+    publicPath: "/",
     filename: "index.js",
   },
 
@@ -19,7 +25,8 @@ module.exports = {
   devtool: "source-map",
 
   devServer: {
-    open: true
+    open: true,
+    historyApiFallback: true,
   },
 
   plugins: [
@@ -69,3 +76,5 @@ module.exports = {
     ],
   },
 };
+
+export default config;

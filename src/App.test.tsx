@@ -4,57 +4,53 @@ import userEvent from "@testing-library/user-event";
 import { render } from "./testUtils";
 import App from "./App";
 
-describe('App.tsx', () => {
-  it("adds a card", async () => {
-    render(<App />, {
-      initialState: {
-        lists: [{ boardId: "board-id-1", id: "list-id-1", name: "first list", archived: false, order: 1 }],
+describe("App.tsx", () => {
+  const getInitialState = (state: {} = {}) => ({
+    ...{
+      boards: { ids: ["board-id-1"], entities: { "board-id-1": { id: "board-id-1", name: "Board 1" } } },
+      lists: {
+        ids: ["list-id-1"],
+        entities: { "list-id-1": { boardId: "board-id-1", id: "list-id-1", name: "First List" } },
+      },
+      cards: { idsPerList: {}, archivedIds: [], entities: {} },
+      selections: { selectedCardIds: [] },
+    },
+    ...state,
+  });
+
+  it("shows boards", async () => {
+    const initialState = getInitialState({
+      boards: {
+        ids: ["board-id-1", "board-id-2", "board-id-3"],
+        entities: {
+          "board-id-1": { id: "board-id-1", name: "Board 1" },
+          "board-id-2": { id: "board-id-2", name: "Board 2" },
+          "board-id-3": { id: "board-id-3", name: "Board 3" },
+        },
       },
     });
-    expect(screen.queryByText(/Add Test/)).toBeNull();
-    await userEvent.type(screen.getByRole("textbox"), "Add Test.{enter}");
-    expect(await screen.findByText(/Add Test/)).toBeInTheDocument();
+    render(<App />, { initialState });
+
+    expect(screen.getByText(/Board 1/)).toBeInTheDocument();
+    expect(screen.getByText(/Board 2/)).toBeInTheDocument();
+    expect(screen.getByText(/Board 3/)).toBeInTheDocument();
   });
 
-  it("archives a card", async () => {
-    render(<App />, {
-      initialState: {
-        lists: [{ boardId: "board-id-1", id: "list-id-1", name: "first list", archived: false, order: 1 }],
-        cards: {
-          idsPerList: { "list-id-1": ["id-1", "id-2"] },
-          archivedIds: ["id-3", "id-4"],
-          entities: {
-            "id-1": { id: "id-1", listId: "list-id-1", name: "foobar1", archived: false },
-            "id-2": { id: "id-2", listId: "list-id-1", name: "foobar2", archived: false },
-            "id-3": { id: "id-3", listId: "list-id-1", name: "foobar3", archived: true },
-            "id-4": { id: "id-4", listId: "list-id-1", name: "foobar4", archived: true },
-          },
-        }
-      },
-    });
+  it("adds a board", async () => {
+    const initialState = getInitialState();
+    render(<App />, { initialState });
 
-    expect(screen.queryByText(/foobar1/)).toBeInTheDocument()
-    await userEvent.type(screen.getAllByRole("checkbox")[0], "Add Test.{enter}");
-    expect(screen.queryByText(/foobar1/)).toBeNull();
+    expect(screen.queryByText(/TestBoard/)).toBeNull();
+    userEvent.click(screen.getByText(/\+ New Board/));
+    await userEvent.type(document.activeElement!, "TestBoard{enter}");
+    expect(await screen.findByText(/TestBoard/)).toBeInTheDocument();
   });
 
-  it("adds a list", async () => {
-    render(<App />);
+  it("shows a board detail page", async () => {
+    const initialState = getInitialState();
+    render(<App />, { initialState });
 
-    userEvent.click(screen.getByText(/New Todo List/));
-    await userEvent.type(document.activeElement!, "NewTodoList{enter}");
-    expect(await screen.findByText(/NewTodoList/)).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Board 1/));
+    expect(await screen.findByText(/First List/)).toBeInTheDocument();
   });
-
-  it("archives a list", async () => {
-    render(<App />, {
-      initialState: {
-        lists: [{ boardId: "board-id-1", id: "list-id-1", name: "first list", archived: false, order: 1 }],
-      },
-    });
-
-    userEvent.click(screen.getByRole("button"));
-    await userEvent.type(document.activeElement!, "NewTodoList{enter}");
-    expect(screen.queryByText(/first list/)).toBeNull();
-  });
-})
+});
